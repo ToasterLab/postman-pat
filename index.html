@@ -1,0 +1,70 @@
+<!DOCTYPE HTML5>
+<html>
+  <head>
+    <title>Postal Code Converter</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+      }
+      #container {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+      }
+      #address_input {
+        width:500px;
+        height:300px;
+      }
+      #submit {
+        margin-top:20px;
+        margin-bottom:20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Postal Code Converter</h1>
+      <textarea placeholder="paste addresses codes here" id="address_input"></textarea>
+      <button id="submit">convert</button>
+      <div id="error"></div>
+      <div id="result"></div>
+    </div>
+    <script>
+      const address_input = document.getElementById('address_input')
+      const submit = document.getElementById('submit')
+      const result = document.getElementById('result')
+      const error = document.getElementById('error')
+
+      const parseAddresses = addresses => addresses.split(`\n`)
+      const getPostalCodesByAddress = addresses => new Promise((resolve, reject) => {
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ addresses })
+        }).then(response => response.json())
+          .then(responseJson => {
+            if(responseJson.hasOwnProperty('result')){
+              resolve(responseJson.result)
+            } else {
+              reject(responseJson)
+            }
+          })
+          .catch(err => reject(err))
+      })
+
+      submit.addEventListener('click', () => {
+        const addresses = address_input.value
+        getPostalCodesByAddress(parseAddresses(addresses))
+          .then(postal_codes => {
+            result.innerText = postal_codes.map(p => `${p.address} | ${p.postal_code}`).join(`\n`)
+          })
+          .catch(err => {
+            result.innerText = `Error: ${JSON.stringify(err)}`
+          })
+      })
+    </script>
+  </body>
+</html>
