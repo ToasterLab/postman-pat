@@ -59,7 +59,7 @@
         const addresses = address_input.value
         getPostalCodesByAddress(parseAddresses(addresses))
           .then(postal_codes => {
-            result.innerText = postal_codes.map(p => `${p.address} | ${p.postal_code}`).join(`\n`)
+            result.innerText = postal_codes.map(p => p.postal_code === null ? 'null': p.postal_code).join(`\n`)
           })
           .catch(err => {
             result.innerText = `Error: ${JSON.stringify(err)}`
