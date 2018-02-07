@@ -18,8 +18,14 @@ if(!GOOGLE_MAPS_API_KEY){
   throw Error(`GOOGLE_MAPS_API_KEY not specified`)
 }
 
-const geocode = address => new Promise((resolve, reject) => {
-  const qs = { address, region: 'sg', components: 'country:SG', key: GOOGLE_MAPS_API_KEY }
+const geocode = (place_id, address) => new Promise((resolve, reject) => {
+  const qs = { key: GOOGLE_MAPS_API_KEY }
+  if(place_id){
+    qs.place_id = place_id
+  }
+  if(address){
+    qs.address = address
+  }
   const options = { url: GOOGLE_MAPS_GEOCODE_API, qs }
   request.get(options)
     .then(response => {

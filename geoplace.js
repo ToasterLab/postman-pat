@@ -15,7 +15,15 @@ const geoplace = query => new Promise((resolve, reject) => {
   const options = { url: GOOGLE_MAPS_GEOPLACE_API, qs }
   request.get(options)
     .then(response => {
-      resolve(response)
+      const responseJson = JSON.parse(response)
+      const hasResults = responseJson.hasOwnProperty('results') && responseJson.results.length > 0
+      if(hasResults){
+        const firstResult = responseJson.results[0]
+        console.log(firstResult)
+        resolve(firstResult.place_id)
+      } else {
+        throw Error('no results')
+      }
     })
     .catch(err => {
       console.error(err)
@@ -23,5 +31,4 @@ const geoplace = query => new Promise((resolve, reject) => {
     })
 })
 
-geoplace('Istana')
-  .then(r => console.log(r))
+module.exports = geoplace
